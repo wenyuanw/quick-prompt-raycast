@@ -15,9 +15,9 @@ function validateAndFixPrompt(obj: unknown): Prompt | null {
   if (!obj || typeof obj !== "object") {
     return null;
   }
-  
+
   const record = obj as Record<string, unknown>;
-  
+
   // 检查必要字段
   if (
     typeof record.title !== "string" ||
@@ -26,14 +26,14 @@ function validateAndFixPrompt(obj: unknown): Prompt | null {
   ) {
     return null;
   }
-  
+
   // 创建一个符合 Prompt 接口的对象，为缺失字段设置默认值
   return {
     id: typeof record.id === "string" ? record.id : nanoid(),
     title: record.title as string,
     content: record.content as string,
     tags: Array.isArray(record.tags) ? record.tags : undefined,
-    enabled: typeof record.enabled === "boolean" ? record.enabled : true
+    enabled: typeof record.enabled === "boolean" ? record.enabled : true,
   };
 }
 
@@ -80,6 +80,7 @@ function ImportForm({ onImport, currentPrompts = [] }: ImportPromptsActionProps)
       new URL(url);
       return true;
     } catch (e) {
+      console.error(e);
       return false;
     }
   };
@@ -196,7 +197,12 @@ function ImportForm({ onImport, currentPrompts = [] }: ImportPromptsActionProps)
       </Form.Dropdown>
 
       {importMethod === "file" && (
-        <Form.FilePicker id="filePath" title="Select File" allowMultipleSelection={false} canChooseDirectories={false} />
+        <Form.FilePicker
+          id="filePath"
+          title="Select File"
+          allowMultipleSelection={false}
+          canChooseDirectories={false}
+        />
       )}
 
       {importMethod === "url" && (
@@ -220,5 +226,12 @@ export function ImportPromptsAction({ onImport, currentPrompts }: ImportPromptsA
     push(<ImportForm onImport={onImport} currentPrompts={currentPrompts} />);
   };
 
-  return <Action title="Import Prompts" icon={Icon.Upload} onAction={handleOpenImportForm} shortcut={{ modifiers: ["cmd"], key: "i" }} />;
+  return (
+    <Action
+      title="Import Prompts"
+      icon={Icon.Upload}
+      onAction={handleOpenImportForm}
+      shortcut={{ modifiers: ["cmd"], key: "i" }}
+    />
+  );
 }

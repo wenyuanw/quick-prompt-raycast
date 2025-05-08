@@ -31,7 +31,7 @@ export default function Command() {
         id: nanoid(),
         title: values.title,
         content: values.content,
-        tags: values.tags.split(",").filter(tag => tag.trim() !== ""),
+        tags: values.tags.split(",").filter((tag) => tag.trim() !== ""),
         enabled: values.enabled,
       },
       ...(prompts ?? []),
@@ -77,13 +77,13 @@ export default function Command() {
   const filteredPrompts = (() => {
     const promptsFilteredByCategory = filterByCategory();
     if (!state.searchText) return promptsFilteredByCategory;
-    
+
     const searchText = state.searchText.toLowerCase();
     return promptsFilteredByCategory.filter((prompt) => {
       const titleMatch = prompt.title.toLowerCase().includes(searchText);
       const contentMatch = prompt.content.toLowerCase().includes(searchText);
-      const tagsMatch = prompt.tags ? prompt.tags.some(tag => tag.toLowerCase().includes(searchText)) : false;
-      
+      const tagsMatch = prompt.tags ? prompt.tags.some((tag) => tag.toLowerCase().includes(searchText)) : false;
+
       return titleMatch || contentMatch || tagsMatch;
     });
   })();

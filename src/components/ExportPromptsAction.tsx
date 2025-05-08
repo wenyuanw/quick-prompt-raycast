@@ -43,5 +43,12 @@ export function ExportPromptsAction({ prompts }: ExportPromptsActionProps) {
     }
   };
 
-  return <Action title="Export Prompts" icon={Icon.SaveDocument} onAction={handleExport} shortcut={{ modifiers: ["cmd"], key: "s" }} />;
+  return (
+    <Action
+      title="Export Prompts"
+      icon={Icon.SaveDocument}
+      onAction={handleExport}
+      shortcut={{ modifiers: ["cmd"], key: "s" }}
+    />
+  );
 }
