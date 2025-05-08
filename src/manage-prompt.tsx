@@ -3,7 +3,14 @@ import { nanoid } from "nanoid";
 import { ActionPanel, Icon, List, Action } from "@raycast/api";
 import { useLocalStorage } from "@raycast/utils";
 import { Filter, Prompt } from "./types";
-import { CreatePromptAction, DeletePromptAction, EmptyView, TogglePromptAction } from "./components";
+import { 
+  CreatePromptAction, 
+  DeletePromptAction, 
+  EmptyView, 
+  TogglePromptAction, 
+  ExportPromptsAction, 
+  ImportPromptsAction 
+} from "./components";
 import { EditPromptAction } from "./components/EditPromptAction";
 
 type State = {
@@ -46,6 +53,15 @@ export default function Command() {
     );
   };
 
+  const handleImport = (importedPrompts: Prompt[]) => {
+    setPrompts(importedPrompts);
+    setState((previous) => ({
+      ...previous,
+      filter: Filter.All,
+      searchText: "",
+    }));
+  };
+
   const filteredPrompts = (() => {
     if (state.filter === Filter.Enabled) {
       return prompts?.filter((prompt) => prompt.enabled) ?? [];
@@ -82,6 +98,8 @@ export default function Command() {
         prompts={filteredPrompts}
         searchText={state.searchText}
         onCreate={handleCreate}
+        onImport={handleImport}
+        currentPrompts={prompts ?? []}
       />
       {filteredPrompts.map((prompt, index) => (
         <List.Item
@@ -111,6 +129,8 @@ export default function Command() {
               <ActionPanel.Section>
                 <CreatePromptAction defaultTitle={state.searchText} onCreate={handleCreate} />
                 <Action.CopyToClipboard content={prompt.content} />
+                <ExportPromptsAction prompts={prompts ?? []} />
+                <ImportPromptsAction onImport={handleImport} currentPrompts={prompts ?? []} />
               </ActionPanel.Section>
               <ActionPanel.Section>
                 <TogglePromptAction

@@ -1,12 +1,15 @@
 import { ActionPanel, List } from "@raycast/api";
 import { Filter, Prompt } from "../types";
 import { CreatePromptAction } from "./CreatePromptAction";
+import { ImportPromptsAction } from "./ImportPromptsAction";
 
 export function EmptyView(props: {
   prompts: Prompt[];
   filter?: Filter;
   searchText: string;
   onCreate: (values: { title: string; content: string; tags: string; enabled: boolean }) => void;
+  onImport?: (prompts: Prompt[]) => void;
+  currentPrompts?: Prompt[];
 }) {
   const filter = props.filter ?? Filter.All;
 
@@ -22,6 +25,7 @@ export function EmptyView(props: {
               defaultTitle={props.searchText}
               onCreate={props.onCreate}
             />
+            {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
           </ActionPanel>
         }
       />
@@ -32,12 +36,13 @@ export function EmptyView(props: {
     case Filter.Enabled: {
       return (
         <List.EmptyView
-          icon="🎉"
-          title="All done"
-          description="All prompts completed - way to go! Why not create some more?"
+          icon="😢"
+          title="No prompts is enabled"
+          description="Uh-oh, looks like you don't have any enabled prompts yet."
           actions={
             <ActionPanel>
               <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
+              {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
             </ActionPanel>
           }
         />
@@ -47,8 +52,14 @@ export function EmptyView(props: {
       return (
         <List.EmptyView
           icon="😢"
-          title="No prompts completed"
-          description="Uh-oh, looks like you haven't completed any prompts yet."
+          title="No prompts is disabled"
+          description="Uh-oh, looks like you don't have any disabled prompts yet."
+          actions={
+            <ActionPanel>
+              <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
+              {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
+            </ActionPanel>
+          }
         />
       );
     }
@@ -62,6 +73,7 @@ export function EmptyView(props: {
           actions={
             <ActionPanel>
               <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
+              {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
             </ActionPanel>
           }
         />
