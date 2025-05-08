@@ -16,7 +16,7 @@ export function EditPromptForm(props: { prompt: Prompt; onEdit: (prompt: Prompt)
                 ...prompt,
                 title: values.title,
                 content: values.content,
-                tags: values.tags.split(","),
+                tags: values.tags.split(",").filter(tag => tag.trim() !== ""),
                 enabled: values.enabled,
               });
               pop();

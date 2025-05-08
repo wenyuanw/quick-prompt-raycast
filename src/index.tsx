@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { ActionPanel, Icon, List, Action } from "@raycast/api";
 import { useLocalStorage } from "@raycast/utils";
 import { Prompt } from "./types";
-import { CreatePromptAction, DeletePromptAction, EmptyView, TogglePromptAction } from "./components";
+import { CreatePromptAction, EmptyView } from "./components";
 
 type State = {
   searchText: string;
@@ -17,14 +17,14 @@ export default function Command() {
 
   const handleCreate = (values: { title: string; content: string; tags: string; enabled: boolean }) => {
     setPrompts([
-      ...(prompts ?? []),
       {
         id: nanoid(),
         title: values.title,
         content: values.content,
-        tags: values.tags.split(","),
+        tags: values.tags.split(",").filter(tag => tag.trim() !== ""),
         enabled: values.enabled,
       },
+      ...(prompts ?? []),
     ]);
     setState((previous) => ({
       ...previous,
@@ -60,21 +60,7 @@ export default function Command() {
                 <Action.CopyToClipboard content={prompt.content} />
               </ActionPanel.Section>
               <ActionPanel.Section>
-                <TogglePromptAction
-                  prompt={prompt}
-                  onToggle={() =>
-                    setPrompts(
-                      prompts?.map((prompt, i) => {
-                        if (i === index) {
-                          return { ...prompt, enabled: !prompt.enabled };
-                        }
-                        return prompt;
-                      }) ?? [],
-                    )
-                  }
-                />
                 <CreatePromptAction defaultTitle={state.searchText} onCreate={handleCreate} />
-                <DeletePromptAction onDelete={() => setPrompts(prompts?.filter((_, i) => i !== index) ?? [])} />
               </ActionPanel.Section>
             </ActionPanel>
           }

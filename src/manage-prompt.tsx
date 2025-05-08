@@ -27,14 +27,14 @@ export default function Command() {
 
   const handleCreate = (values: { title: string; content: string; tags: string; enabled: boolean }) => {
     setPrompts([
-      ...(prompts ?? []),
       {
         id: nanoid(),
         title: values.title,
         content: values.content,
-        tags: values.tags.split(","),
+        tags: values.tags.split(",").filter(tag => tag.trim() !== ""),
         enabled: values.enabled,
       },
+      ...(prompts ?? []),
     ]);
     setState((previous) => ({
       ...previous,
