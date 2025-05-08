@@ -20,7 +20,7 @@ export function EditPromptForm(props: { prompt: Prompt; onEdit: (prompt: Prompt)
     validation: {
       title: FormValidation.Required,
       content: FormValidation.Required,
-    }
+    },
   });
   const hasSetContent = useRef(false);
 
@@ -45,13 +45,8 @@ export function EditPromptForm(props: { prompt: Prompt; onEdit: (prompt: Prompt)
       }
     >
       <Form.TextField title="Title" placeholder="Enter a title for the prompt" {...itemProps.title} />
-      <Form.TextArea  title="Content" placeholder="Enter the content of the prompt" {...itemProps.content} />
-      <Form.TextField
-        
-        title="Tags"
-        placeholder="split by comma, eg: tag1,tag2"
-        {...itemProps.tags}
-      />
+      <Form.TextArea title="Content" placeholder="Enter the content of the prompt" {...itemProps.content} />
+      <Form.TextField title="Tags" placeholder="split by comma, eg: tag1,tag2" {...itemProps.tags} />
       <Form.Checkbox title="Enabled" label="Enabled" {...itemProps.enabled} />
     </Form>
   );

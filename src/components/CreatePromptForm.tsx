@@ -18,7 +18,7 @@ export function CreatePromptForm(props: {
     validation: {
       title: FormValidation.Required,
       content: FormValidation.Required,
-    }
+    },
   });
   const hasSetContent = useRef(false);
   const hasSetTitle = useRef(false);
@@ -48,7 +48,12 @@ export function CreatePromptForm(props: {
         </ActionPanel>
       }
     >
-      <Form.TextField defaultValue={defaultTitle} title="Title" placeholder="Enter a title for the prompt" {...itemProps.title} />
+      <Form.TextField
+        defaultValue={defaultTitle}
+        title="Title"
+        placeholder="Enter a title for the prompt"
+        {...itemProps.title}
+      />
       <Form.TextArea title="Content" {...itemProps.content} placeholder="Enter the content of the prompt" />
       <Form.TextField title="Tags" placeholder="split by comma, eg: tag1,tag2" {...itemProps.tags} />
       <Form.TextField id="tags" title="Tags" placeholder="split by comma, eg: tag1,tag2" />
