@@ -62,7 +62,8 @@ export default function Command() {
     }));
   };
 
-  const filteredPrompts = (() => {
+  // 根据过滤条件获取 prompts
+  const filterByCategory = () => {
     if (state.filter === Filter.Enabled) {
       return prompts?.filter((prompt) => prompt.enabled) ?? [];
     }
@@ -70,6 +71,21 @@ export default function Command() {
       return prompts?.filter((prompt) => !prompt.enabled) ?? [];
     }
     return prompts ?? [];
+  };
+
+  // 根据搜索文本过滤
+  const filteredPrompts = (() => {
+    const promptsFilteredByCategory = filterByCategory();
+    if (!state.searchText) return promptsFilteredByCategory;
+    
+    const searchText = state.searchText.toLowerCase();
+    return promptsFilteredByCategory.filter((prompt) => {
+      const titleMatch = prompt.title.toLowerCase().includes(searchText);
+      const contentMatch = prompt.content.toLowerCase().includes(searchText);
+      const tagsMatch = prompt.tags ? prompt.tags.some(tag => tag.toLowerCase().includes(searchText)) : false;
+      
+      return titleMatch || contentMatch || tagsMatch;
+    });
   })();
 
   return (
@@ -87,7 +103,7 @@ export default function Command() {
           <List.Dropdown.Item title="Disabled" value={Filter.Disabled} icon={Icon.EyeDisabled} />
         </List.Dropdown>
       }
-      filtering
+      filtering={false}
       onSearchTextChange={(newValue) => {
         setState((previous) => ({ ...previous, searchText: newValue }));
       }}

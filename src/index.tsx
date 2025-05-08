@@ -33,15 +33,27 @@ export default function Command() {
   };
 
   // 只展示启用的 prompt
+  const enabledPrompts = prompts?.filter((prompt) => prompt.enabled) ?? [];
+  
+  // 自定义过滤逻辑，匹配 title、content 和 tags
   const filteredPrompts = (() => {
-    return prompts?.filter((prompt) => prompt.enabled) ?? [];
+    if (!state.searchText) return enabledPrompts;
+    
+    const searchText = state.searchText.toLowerCase();
+    return enabledPrompts.filter((prompt) => {
+      const titleMatch = prompt.title.toLowerCase().includes(searchText);
+      const contentMatch = prompt.content.toLowerCase().includes(searchText);
+      const tagsMatch = prompt.tags ? prompt.tags.some(tag => tag.toLowerCase().includes(searchText)) : false;
+      
+      return titleMatch || contentMatch || tagsMatch;
+    });
   })();
 
   return (
     <List
       isLoading={isLoading}
       searchText={state.searchText}
-      filtering
+      filtering={false}
       onSearchTextChange={(newValue) => {
         setState((previous) => ({ ...previous, searchText: newValue }));
       }}
