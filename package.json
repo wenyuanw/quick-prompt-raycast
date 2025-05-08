@@ -14,18 +14,21 @@
     {
       "name": "index",
       "title": "Apply Prompt",
+      "subtitle": "Apply a prompt in the current application",
       "description": "Apply a prompt in the current application",
       "mode": "view"
     },
     {
       "name": "manage-prompt",
       "title": "Manage Prompt",
+      "subtitle": "Manage all prompts, including create, edit, delete",
       "description": "Manage all prompts, including create, edit, delete",
       "mode": "view"
     },
     {
       "name": "save-selected-text",
       "title": "Save Selected Text",
+      "subtitle": "Save selected text as a prompt",
       "description": "Save selected text as a prompt",
       "mode": "view"
     }
