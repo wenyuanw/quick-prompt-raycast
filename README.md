@@ -23,10 +23,14 @@ An efficient prompt management and quick input extension for **Raycast**, integr
 - Trigger command: `Apply Prompt`
 - Function: Displays all enabled prompts, supports searching, pasting, copying, toggling activation status, deleting, etc.
 
+![Quick Prompt](./metadata/quick-prompt-1.png)
+
 ### 2. Prompt Management
 
 - Trigger command: `Manage Prompt`
 - Function: Manage all prompts (including disabled ones), supports creation, editing, deletion, toggling activation status, importing, exporting, etc.
+
+![Quick Prompt](./metadata/quick-prompt-2.png)
 
 ### 3. Save Selected Text as Prompt
 
@@ -42,6 +46,8 @@ An efficient prompt management and quick input extension for **Raycast**, integr
 
 - **Export function**: Export all current prompts as a JSON file saved to the desktop and automatically copied to the clipboard.
 - **Import function**: Support importing prompt data from local JSON files or remote URLs, automatically merging duplicates.
+
+![Quick Prompt](./metadata/quick-prompt-3.png)
 
 ## License
 

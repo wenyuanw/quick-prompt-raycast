@@ -23,10 +23,14 @@
 - 触发命令：`Apply Prompt`
 - 功能：显示所有已启用的 Prompt，支持搜索、粘贴、复制、切换启用状态、删除等操作。
 
+![Quick Prompt](./metadata/quick-prompt-1.png)
+
 ### 2. 管理 Prompt
 
 - 触发命令：`Manage Prompt`
 - 功能：管理所有 Prompt（包括已禁用的），支持创建、编辑、删除、切换启用状态、导入、导出等。
+
+![Quick Prompt](./metadata/quick-prompt-2.png)
 
 ### 3. 保存选中文本为 Prompt
 
@@ -42,6 +46,8 @@
 
 - **导出功能**：将当前所有 Prompt 导出为 JSON 文件保存到桌面，并自动复制到剪贴板。
 - **导入功能**：支持从本地 JSON 文件或远程 URL 导入 Prompt 数据，自动合并重复项。
+
+![Quick Prompt](./metadata/quick-prompt-3.png)
 
 ## 许可协议
 
