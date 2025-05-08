@@ -3,13 +3,13 @@ import { nanoid } from "nanoid";
 import { ActionPanel, Icon, List, Action } from "@raycast/api";
 import { useLocalStorage } from "@raycast/utils";
 import { Filter, Prompt } from "./types";
-import { 
-  CreatePromptAction, 
-  DeletePromptAction, 
-  EmptyView, 
-  TogglePromptAction, 
-  ExportPromptsAction, 
-  ImportPromptsAction 
+import {
+  CreatePromptAction,
+  DeletePromptAction,
+  EmptyView,
+  TogglePromptAction,
+  ExportPromptsAction,
+  ImportPromptsAction,
 } from "./components";
 import { EditPromptAction } from "./components/EditPromptAction";
 
@@ -128,9 +128,8 @@ export default function Command() {
             <ActionPanel>
               <ActionPanel.Section>
                 <CreatePromptAction defaultTitle={state.searchText} onCreate={handleCreate} />
-                <Action.CopyToClipboard content={prompt.content} />
-                <ExportPromptsAction prompts={prompts ?? []} />
-                <ImportPromptsAction onImport={handleImport} currentPrompts={prompts ?? []} />
+                <EditPromptAction prompt={prompt} onEdit={handleEdit} />
+                <Action.CopyToClipboard content={prompt.content} shortcut={{ modifiers: ["cmd"], key: "c" }} />
               </ActionPanel.Section>
               <ActionPanel.Section>
                 <TogglePromptAction
@@ -146,8 +145,11 @@ export default function Command() {
                     )
                   }
                 />
-                <EditPromptAction prompt={prompt} onEdit={handleEdit} />
                 <DeletePromptAction onDelete={() => setPrompts(prompts?.filter((_, i) => i !== index) ?? [])} />
+              </ActionPanel.Section>
+              <ActionPanel.Section>
+                <ExportPromptsAction prompts={prompts ?? []} />
+                <ImportPromptsAction onImport={handleImport} currentPrompts={prompts ?? []} />
               </ActionPanel.Section>
             </ActionPanel>
           }

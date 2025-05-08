@@ -1,28 +1,59 @@
-import { Action, Toast, showToast, Form, ActionPanel, useNavigation } from "@raycast/api";
+import { Action, Toast, showToast, Form, ActionPanel, useNavigation, Icon } from "@raycast/api";
 import { Prompt } from "../types";
 import * as fs from "fs/promises";
 import { useState } from "react";
 import fetch from "node-fetch";
+import { nanoid } from "nanoid";
 
 interface ImportPromptsActionProps {
   onImport: (prompts: Prompt[]) => void;
   currentPrompts?: Prompt[]; // 添加当前提示词列表参数
 }
 
+// 验证提示词数据并添加缺失的必要字段
+function validateAndFixPrompt(obj: unknown): Prompt | null {
+  if (!obj || typeof obj !== "object") {
+    return null;
+  }
+  
+  const record = obj as Record<string, unknown>;
+  
+  // 检查必要字段
+  if (
+    typeof record.title !== "string" ||
+    typeof record.content !== "string" ||
+    (record.tags !== undefined && !Array.isArray(record.tags))
+  ) {
+    return null;
+  }
+  
+  // 创建一个符合 Prompt 接口的对象，为缺失字段设置默认值
+  return {
+    id: typeof record.id === "string" ? record.id : nanoid(),
+    title: record.title as string,
+    content: record.content as string,
+    tags: Array.isArray(record.tags) ? record.tags : undefined,
+    enabled: typeof record.enabled === "boolean" ? record.enabled : true
+  };
+}
+
 // 处理合并提示词数据的通用函数
-function mergePrompts(importedPrompts: Prompt[], currentPrompts: Prompt[] = []): { mergedPrompts: Prompt[], stats: { added: number, updated: number } } {
+function mergePrompts(
+  importedPrompts: Prompt[],
+  currentPrompts: Prompt[] = [],
+): { mergedPrompts: Prompt[]; stats: { added: number; updated: number } } {
   // 处理导入的数据
   const stats = {
     added: 0,
-    updated: 0
+    updated: 0,
   };
-  
+
   // 合并数据：新数据将覆盖同ID的旧数据，不同ID的数据将被添加
   const mergedPrompts = [...currentPrompts]; // 复制当前提示词列表
-  
-  importedPrompts.forEach(importedPrompt => {
-    const existingIndex = mergedPrompts.findIndex(p => p.id === importedPrompt.id);
-    
+
+  importedPrompts.forEach((importedPrompt) => {
+    const existingIndex = mergedPrompts.findIndex((p) => p.id === importedPrompt.id);
+
     if (existingIndex >= 0) {
       // 更新现有项
       mergedPrompts[existingIndex] = importedPrompt;
@@ -42,7 +73,7 @@ function ImportForm({ onImport, currentPrompts = [] }: ImportPromptsActionProps)
   const [isImporting, setIsImporting] = useState(false);
   const [urlError, setUrlError] = useState<string | undefined>();
   const [importMethod, setImportMethod] = useState<"file" | "url">("file");
-  
+
   const validateUrl = (url: string): boolean => {
     if (!url) return false;
     try {
@@ -52,74 +83,87 @@ function ImportForm({ onImport, currentPrompts = [] }: ImportPromptsActionProps)
       return false;
     }
   };
-  
-  const handleImport = async (values: { filePath?: string[], url?: string }) => {
+
+  const handleImport = async (values: { filePath?: string[]; url?: string }) => {
     const { filePath, url } = values;
-    
+
     // 验证输入
     if (importMethod === "file" && (!filePath || filePath.length === 0)) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "导入失败",
-        message: "请选择文件",
+        title: "Import Failed",
+        message: "Please select a file",
       });
       return;
     }
-    
+
     if (importMethod === "url") {
       if (!url) {
-        setUrlError("请输入URL");
+        setUrlError("Please enter a valid URL");
         return;
       }
-      
+
       if (!validateUrl(url)) {
-        setUrlError("请输入有效的URL");
+        setUrlError("Please enter a valid URL");
         return;
       }
     }
-    
+
     setIsImporting(true);
 
     try {
-      let importedPrompts: Prompt[];
-      
+      let importData: unknown[];
+
       // 根据选择的方式导入数据
       if (importMethod === "file" && filePath && filePath.length > 0) {
         // 从文件导入
         const fileContent = await fs.readFile(filePath[0], "utf-8");
-        importedPrompts = JSON.parse(fileContent) as Prompt[];
+        importData = JSON.parse(fileContent);
       } else if (importMethod === "url" && url) {
         // 从URL导入
         const response = await fetch(url);
-        
+
         if (!response.ok) {
-          throw new Error(`服务器返回错误: ${response.status} ${response.statusText}`);
+          throw new Error(`Server returned an error: ${response.status} ${response.statusText}`);
         }
-        
-        importedPrompts = await response.json() as Prompt[];
+
+        importData = await response.json();
       } else {
-        throw new Error("没有选择导入方式");
+        throw new Error("No import method selected");
       }
-      
-      if (!Array.isArray(importedPrompts) || !importedPrompts.every(isValidPrompt)) {
-        throw new Error("无效的提示词数据格式");
+
+      if (!Array.isArray(importData)) {
+        throw new Error("Invalid prompt data format: not an array");
       }
-      
+
+      // 验证和修复每个导入的提示词
+      const validPrompts: Prompt[] = [];
+      for (const item of importData) {
+        const validPrompt = validateAndFixPrompt(item);
+        if (validPrompt) {
+          validPrompts.push(validPrompt);
+        }
+      }
+
+      if (validPrompts.length === 0) {
+        throw new Error("No valid prompt data found");
+      }
+
       // 使用通用合并函数处理数据
-      const { mergedPrompts, stats } = mergePrompts(importedPrompts, currentPrompts);
+      const { mergedPrompts, stats } = mergePrompts(validPrompts, currentPrompts);
 
       // 将合并后的数据传递给onImport
       onImport(mergedPrompts);
-      
+
       await showToast({
         style: Toast.Style.Success,
-        title: "导入成功",
-        message: `已导入 ${importedPrompts.length} 条提示词 (新增: ${stats.added}, 更新: ${stats.updated})`,
+        title: "Import Success",
+        message: `Imported ${validPrompts.length} prompts (Added: ${stats.added}, Updated: ${stats.updated})`,
       });
     } catch (error) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "导入失败",
+        title: "Import Failed",
         message: String(error),
       });
     } finally {
@@ -128,42 +172,37 @@ function ImportForm({ onImport, currentPrompts = [] }: ImportPromptsActionProps)
   };
 
   return (
-    <Form 
-      navigationTitle="导入提示词"
+    <Form
+      navigationTitle="Import Prompts"
       actions={
         <ActionPanel>
-          <Action.SubmitForm title="导入" onSubmit={handleImport} />
+          <Action.SubmitForm title="Import" onSubmit={handleImport} />
         </ActionPanel>
       }
       isLoading={isImporting}
     >
-      <Form.Description 
-        title="导入说明" 
-        text="请选择从本地文件导入或从远程URL导入提示词数据。导入时会合并数据：ID相同的提示词将被更新，ID不同的提示词将被添加。" 
+      <Form.Description
+        title="Import Instructions"
+        text="Please select to import prompt data from a local file or a remote URL. When importing, the data will be merged: prompts with the same ID will be updated, and prompts with different IDs will be added."
       />
-      <Form.Dropdown 
-        id="importMethod" 
-        title="导入方式" 
-        value={importMethod} 
+      <Form.Dropdown
+        id="importMethod"
+        title="Import Method"
+        value={importMethod}
         onChange={(newValue) => setImportMethod(newValue as "file" | "url")}
       >
-        <Form.Dropdown.Item value="file" title="从文件导入" />
-        <Form.Dropdown.Item value="url" title="从URL导入" />
+        <Form.Dropdown.Item value="file" title="From File" />
+        <Form.Dropdown.Item value="url" title="From URL" />
       </Form.Dropdown>
-      
+
       {importMethod === "file" && (
-        <Form.FilePicker 
-          id="filePath" 
-          title="选择文件" 
-          allowMultipleSelection={false} 
-          canChooseDirectories={false}
-        />
+        <Form.FilePicker id="filePath" title="Select File" allowMultipleSelection={false} canChooseDirectories={false} />
       )}
-      
+
       {importMethod === "url" && (
-        <Form.TextField 
-          id="url" 
-          title="URL地址" 
+        <Form.TextField
+          id="url"
+          title="URL Address"
           placeholder="https://example.com/prompts.json"
           error={urlError}
           onChange={() => setUrlError(undefined)}
@@ -176,23 +215,10 @@ function ImportForm({ onImport, currentPrompts = [] }: ImportPromptsActionProps)
 // 主导入按钮组件
 export function ImportPromptsAction({ onImport, currentPrompts }: ImportPromptsActionProps) {
   const { push } = useNavigation();
-  
+
   const handleOpenImportForm = () => {
     push(<ImportForm onImport={onImport} currentPrompts={currentPrompts} />);
   };
 
-  return <Action title="导入提示词" icon="📥" onAction={handleOpenImportForm} />;
+  return <Action title="Import Prompts" icon={Icon.Upload} onAction={handleOpenImportForm} shortcut={{ modifiers: ["cmd"], key: "i" }} />;
 }
-
-// 验证提示词数据是否有效
-function isValidPrompt(obj: any): obj is Prompt {
-  return (
-    typeof obj === "object" &&
-    obj !== null &&
-    typeof obj.id === "string" &&
-    typeof obj.title === "string" &&
-    typeof obj.content === "string" &&
-    typeof obj.enabled === "boolean" &&
-    (obj.tags === undefined || Array.isArray(obj.tags))
-  );
-} 

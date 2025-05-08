@@ -21,10 +21,7 @@ export function EmptyView(props: {
         description={`Can't find a prompt matching ${props.searchText}.\nCreate it now!`}
         actions={
           <ActionPanel>
-            <CreatePromptAction
-              defaultTitle={props.searchText}
-              onCreate={props.onCreate}
-            />
+            <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
             {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
           </ActionPanel>
         }
@@ -42,7 +39,9 @@ export function EmptyView(props: {
           actions={
             <ActionPanel>
               <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
-              {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
+              {props.onImport && (
+                <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />
+              )}
             </ActionPanel>
           }
         />
@@ -57,7 +56,9 @@ export function EmptyView(props: {
           actions={
             <ActionPanel>
               <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
-              {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
+              {props.onImport && (
+                <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />
+              )}
             </ActionPanel>
           }
         />
@@ -73,7 +74,9 @@ export function EmptyView(props: {
           actions={
             <ActionPanel>
               <CreatePromptAction defaultTitle={props.searchText} onCreate={props.onCreate} />
-              {props.onImport && <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />}
+              {props.onImport && (
+                <ImportPromptsAction onImport={props.onImport} currentPrompts={props.currentPrompts} />
+              )}
             </ActionPanel>
           }
         />

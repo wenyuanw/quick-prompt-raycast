@@ -8,12 +8,7 @@ export function EditPromptAction(props: { prompt: Prompt; onEdit: (prompt: Promp
       icon={Icon.Pencil}
       title={`Edit ${props.prompt.title}`}
       shortcut={{ modifiers: ["cmd"], key: "e" }}
-      target={
-        <EditPromptForm
-          prompt={props.prompt}
-          onEdit={props.onEdit}
-        />
-      }
+      target={<EditPromptForm prompt={props.prompt} onEdit={props.onEdit} />}
     />
   );
 }

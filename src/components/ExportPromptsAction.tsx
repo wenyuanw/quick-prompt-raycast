@@ -1,4 +1,4 @@
-import { Action, Toast, showToast, Clipboard, showHUD } from "@raycast/api";
+import { Action, Toast, showToast, Clipboard, showHUD, Icon } from "@raycast/api";
 import { Prompt } from "../types";
 import * as fs from "fs/promises";
 import { homedir } from "os";
@@ -15,33 +15,33 @@ export function ExportPromptsAction({ prompts }: ExportPromptsActionProps) {
       const fileName = `quick-prompts-${new Date().toISOString().slice(0, 10)}.json`;
       // 使用用户的桌面作为默认保存位置
       const defaultSavePath = path.join(homedir(), "Desktop", fileName);
-      
+
       // 生成 JSON 内容
       const jsonContent = JSON.stringify(prompts, null, 2);
-      
+
       // 先将内容复制到剪贴板
       await Clipboard.copy(jsonContent);
-      
+
       // 保存文件到桌面
       await fs.writeFile(defaultSavePath, jsonContent, "utf-8");
-      
+
       // 显示多个提示，但不关闭窗口
       await showToast({
         style: Toast.Style.Success,
-        title: "导出成功",
-        message: `已保存到桌面: ${fileName}`,
+        title: "Export Success",
+        message: `Saved to desktop: ${fileName}`,
       });
-      
+
       // 使用 HUD 提示但不关闭窗口
-      await showHUD("已将 JSON 数据复制到剪贴板，并保存到桌面");
+      await showHUD("JSON data copied to clipboard and saved to desktop");
     } catch (error) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "导出失败",
+        title: "Export Failed",
         message: String(error),
       });
     }
   };
 
-  return <Action title="导出提示词" icon="📤" onAction={handleExport} />;
-} 
+  return <Action title="Export Prompts" icon={Icon.SaveDocument} onAction={handleExport} shortcut={{ modifiers: ["cmd"], key: "s" }} />;
+}
