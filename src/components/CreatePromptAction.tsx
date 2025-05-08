@@ -2,10 +2,7 @@ import { Action, Icon } from "@raycast/api";
 import { CreatePromptForm } from "./CreatePromptForm";
 import { PromptFormValues } from "../types";
 
-export function CreatePromptAction(props: {
-  defaultTitle?: string;
-  onCreate: (values: PromptFormValues) => void;
-}) {
+export function CreatePromptAction(props: { defaultTitle?: string; onCreate: (values: PromptFormValues) => void }) {
   return (
     <Action.Push
       icon={Icon.Plus}
