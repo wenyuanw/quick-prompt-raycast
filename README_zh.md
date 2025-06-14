@@ -13,7 +13,10 @@
 
 ## 安装方法
 
-1. 在 Raycast Store 搜索 `Quick Prompt` 并安装，或从源码构建
+1. ~~在 Raycast Store 搜索 `Quick Prompt` 并安装，或从源码构建~~
+
+> 由于 Raycast Store 已经存在相似的 Prompt 管理扩展，所以不再上架，后续会抽空提 PR 到该插件。
+
 2. 在 Raycast 中通过 `Extensions` -> `Import Extension` 导入构建产物。
 
 ## 使用说明

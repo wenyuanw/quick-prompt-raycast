@@ -13,8 +13,11 @@ An efficient prompt management and quick input extension for **Raycast**, integr
 
 ## Installation
 
-1. Search for `Quick Prompt` in the Raycast Store and install, or build from source.
-2. Import the build product in Raycast via `Extensions` -> `Import Extension`.
+1. ~~Search for `Quick Prompt` in the Raycast Store and install, or build from source.~~
+
+> Since there is a similar prompt management extension in the Raycast Store, it will not be listed in the store, and PRs will be made to the extension when time permits.
+
+1. Import the build product in Raycast via `Extensions` -> `Import Extension`.
 
 ## Usage Instructions
 
